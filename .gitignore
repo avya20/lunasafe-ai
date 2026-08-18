@@ -1,0 +1,29 @@
+# JavaScript dependencies and build output
+node_modules/
+dist/
+
+# Python environments, caches, and test artifacts
+backend/.venv/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+
+# Local configuration and private material
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+*.p12
+*.pfx
+*.crt
+*.cer
+*.secrets.*
+
+# Large/local data and operating-system files
+data/
+datasets/
+sample-data/
+uploads/
+*.sqlite3
+.DS_Store
