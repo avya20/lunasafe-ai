@@ -8,7 +8,11 @@ from fastapi.middleware.cors import CORSMiddleware
 app = FastAPI(title='LunaSafe AI Prototype')
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=['http://localhost:4173', 'http://127.0.0.1:4173'],
+    allow_origins=[
+        'http://localhost:4173',
+        'http://127.0.0.1:4173',
+        'https://lunasafe-ai.vercel.app',
+    ],
     allow_credentials=False,
     allow_methods=['GET', 'POST', 'OPTIONS'],
     allow_headers=['*'],
