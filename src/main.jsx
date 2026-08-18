@@ -4,7 +4,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import {Upload, ScanLine, ShieldCheck, AlertTriangle, MapPin, ChevronRight, Orbit, Crosshair, Sparkles, CheckCircle2, Activity} from 'lucide-react';
 import './style.css';
 
-const API = 'http://127.0.0.1:8000';
+const API = 'https://lunasafe-ai.onrender.com';
 const stages = ['Acquire Image','Enhance Terrain','Detect Hazards','Estimate Uncertainty','Calculate Safety','Rank Landing Zones'];
 const stageIcons = [Upload, Sparkles, ScanLine, Activity, ShieldCheck, MapPin];
 
