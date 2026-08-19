@@ -85,11 +85,25 @@ async def analyze(file: UploadFile = File(...)):
     low, high = np.percentile(uncertainty, (5, 95))
     uncertainty_display=np.clip((uncertainty-low)/max(high-low, 1e-6),0,1)
     mark('uncertainty_display')
-    circles=cv2.HoughCircles(cv2.GaussianBlur(enhanced,(9,9),2),cv2.HOUGH_GRADIENT,1.2,max(20,min(gray.shape)//7),param1=80,param2=23,minRadius=max(5,min(gray.shape)//45),maxRadius=max(12,min(gray.shape)//6))
+    # Hough circles is the only superlinear stage. Detect on a bounded proxy,
+    # then project candidates back to the full-resolution risk map.
+    hough_max_dim = 450
+    hough_scale = min(1.0, hough_max_dim / max(enhanced.shape[:2]))
+    hough_input = enhanced if hough_scale == 1.0 else cv2.resize(
+        enhanced, None, fx=hough_scale, fy=hough_scale, interpolation=cv2.INTER_AREA,
+    )
+    hough_min_dim = min(hough_input.shape)
+    circles=cv2.HoughCircles(
+        cv2.GaussianBlur(hough_input,(9,9),2), cv2.HOUGH_GRADIENT, 1.2,
+        max(20 * hough_scale, hough_min_dim // 7), param1=80, param2=23,
+        minRadius=max(5 * hough_scale, hough_min_dim // 45),
+        maxRadius=max(12 * hough_scale, hough_min_dim // 6),
+    )
     crater=np.zeros_like(gray,dtype=np.float32)
     n_circles=0
     if circles is not None:
-        for x,y,r in np.round(circles[0]).astype(int)[:35]: cv2.circle(crater,(x,y),r,1,-1); n_circles+=1
+        full_resolution_circles = circles[0] / hough_scale
+        for x,y,r in np.round(full_resolution_circles).astype(int)[:35]: cv2.circle(crater,(x,y),r,1,-1); n_circles+=1
         crater=cv2.GaussianBlur(crater,(0,0),max(2,min(gray.shape)//90))
     mark('hough_circles')
     risk=np.clip(100*(.27*shadow+.22*rough+.18*slope+.18*crater+.15*uncertainty),0,100).astype(np.uint8)
